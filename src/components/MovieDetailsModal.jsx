@@ -3,18 +3,18 @@ import Row from "./Row";
 import { moviesByGenre } from "../data/movieCatalog";
 
 function MovieDetailsModal({ movie, onClose }) {
-    if (!movie) return null;
 
-    // 🔒 Lock background scroll
+    // ✅ Hooks must be called unconditionally
     useEffect(() => {
-        const originalStyle = window.getComputedStyle(document.body).overflow;
+        if (!movie) return;
 
         document.body.style.overflow = "hidden";
-
         return () => {
-            document.body.style.overflow = originalStyle || "auto";
+            document.body.style.overflow = "auto";
         };
-    }, []);
+    }, [movie]);
+
+    if (!movie) return null;
 
     // 🔍 Find related movies from same genre
     let related = [];
@@ -26,33 +26,15 @@ function MovieDetailsModal({ movie, onClose }) {
 
     return (
         <div className="fixed inset-0 z-[100] bg-black bg-opacity-80 flex justify-center items-start overflow-hidden">
-            {/* MODAL CONTAINER */}
-            <div
-                className="
-                    relative
-                    bg-[#181818]
-                    w-[90%]
-                    max-w-5xl
-                    max-h-[85vh]
-                    mt-16
-                    rounded-lg
-                    shadow-2xl
-                    overflow-y-auto
-                "
-            >
-                {/* CLOSE BUTTON */}
-                <button
-                    onClick={() => {
-                        document.body.style.overflow = "auto";
-                        onClose();
-                    }}
+            <div className="relative bg-[#181818] w-[90%] max-w-5xl max-h-[85vh] mt-16 rounded-lg shadow-2xl overflow-y-auto">
 
+                <button
+                    onClick={onClose}
                     className="absolute top-4 right-4 text-white text-2xl z-20"
                 >
                     ✕
                 </button>
 
-                {/* TRAILER SECTION */}
                 {movie.trailer && (
                     <div className="w-full h-[360px] bg-black">
                         <iframe
@@ -64,7 +46,6 @@ function MovieDetailsModal({ movie, onClose }) {
                     </div>
                 )}
 
-                {/* INFO SECTION */}
                 <div className="p-6 text-white">
                     <h2 className="text-2xl font-bold mb-2">
                         {movie.title}
@@ -84,7 +65,6 @@ function MovieDetailsModal({ movie, onClose }) {
                         </button>
                     </div>
 
-                    {/* MORE LIKE THIS */}
                     {related.length > 0 && (
                         <Row title="More Like This" movies={related} />
                     )}
