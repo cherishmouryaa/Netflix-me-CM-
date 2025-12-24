@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { saveProgress } from "../utils/continueWatching";
 import MovieDetailsModal from "./MovieDetailsModal";
 
@@ -6,7 +6,9 @@ function Row({ title, movies }) {
     const [hoveredId, setHoveredId] = useState(null);
     const [unmuted, setUnmuted] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
-    let hoverTimer;
+
+    // ✅ useRef for mutable timer (CI-safe)
+    const hoverTimerRef = useRef(null);
 
     return (
         <>
@@ -22,13 +24,13 @@ function Row({ title, movies }) {
                                 key={movie.id}
                                 className="relative min-w-[160px] h-[240px]"
                                 onMouseEnter={() => {
-                                    hoverTimer = setTimeout(() => {
+                                    hoverTimerRef.current = setTimeout(() => {
                                         setHoveredId(movie.id);
                                         setUnmuted(false);
                                     }, 300);
                                 }}
                                 onMouseLeave={() => {
-                                    clearTimeout(hoverTimer);
+                                    clearTimeout(hoverTimerRef.current);
                                     setHoveredId(null);
                                 }}
                             >
@@ -44,7 +46,9 @@ function Row({ title, movies }) {
                                     <div className="absolute bottom-2 left-2 right-2 h-1 bg-gray-700 rounded">
                                         <div
                                             className="h-full bg-red-600 rounded"
-                                            style={{ width: `${Math.min(movie.progress, 100)}%` }}
+                                            style={{
+                                                width: `${Math.min(movie.progress, 100)}%`,
+                                            }}
                                         />
                                     </div>
                                 )}
@@ -53,23 +57,24 @@ function Row({ title, movies }) {
                                 {isHovered && movie.trailer && (
                                     <div
                                         className="
-                      absolute 
-                      -top-20 
-                      -left-20
-                      w-[320px]
-                      bg-[#181818]
-                      rounded-lg
-                      shadow-2xl
-                      z-50
-                      overflow-hidden
-                      animate-fadeIn
-                    "
+                                            absolute 
+                                            -top-20 
+                                            -left-20
+                                            w-[320px]
+                                            bg-[#181818]
+                                            rounded-lg
+                                            shadow-2xl
+                                            z-50
+                                            overflow-hidden
+                                            animate-fadeIn
+                                        "
                                     >
                                         {/* TRAILER */}
                                         <div className="relative w-full h-[180px] bg-black">
                                             <iframe
-                                                src={`${movie.trailer}?autoplay=1&mute=${unmuted ? 0 : 1
-                                                    }&controls=0&modestbranding=1&rel=0`}
+                                                src={`${movie.trailer}?autoplay=1&mute=${
+                                                    unmuted ? 0 : 1
+                                                }&controls=0&modestbranding=1&rel=0`}
                                                 title={movie.title}
                                                 allow="autoplay; encrypted-media"
                                                 className="w-full h-full pointer-events-none"
