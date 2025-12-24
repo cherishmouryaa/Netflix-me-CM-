@@ -1,4 +1,7 @@
 # React + Vite
+# Netflix-Me – Netflix-Inspired OTT Platform
+![CI](https://github.com/cherishmouryaa/Netflix-me-CM-/actions/workflows/ci.yml/badge.svg)
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
